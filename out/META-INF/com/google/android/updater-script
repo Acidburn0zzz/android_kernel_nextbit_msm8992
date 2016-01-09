@@ -1,0 +1,32 @@
+set_progress(0.01);
+
+ui_print("  ");
+ui_print("Deathly Kernel by deadman96385");
+ui_print("  ");
+set_progress(0.01);
+
+ui_print("Extracting files ...");
+package_extract_dir("kernel", "/tmp");
+set_perm(0, 0, 0777, "/tmp/mkbootimg.sh");
+set_perm(0, 0, 0777, "/tmp/mkbootimg");
+set_perm(0, 0, 0777, "/tmp/unpackbootimg");
+set_perm(0, 0, 0777, "/tmp/busybox");
+set_progress(0.1);
+
+ui_print("Extract the current boot.img...");
+run_program("/sbin/busybox", "dd", "if=/dev/block/bootdevice/by-name/boot", "of=/tmp/boot.img");
+run_program("/tmp/unpackbootimg", "-i", "/tmp/boot.img", "-o", "/tmp/");
+set_progress(0.55);
+
+ui_print("Making the new boot.img...");
+run_program("/tmp/mkbootimg.sh");
+set_progress(0.9);
+
+ui_print("Flashing the new boot.img...");
+run_program("/sbin/busybox", "dd", "if=/tmp/newboot.img", "of=/dev/block/bootdevice/by-name/boot");
+set_progress(0.95);
+
+ui_print("##############################################");
+ui_print("#  The Kernel has finished flashing, enjoy!  #");
+ui_print("##############################################");
+
